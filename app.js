@@ -1,4 +1,4 @@
-//jshint esversion:6
+///jshint esversion:6
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -77,9 +77,9 @@ app.get("/", function(req, res) {
 
 app.get("/:customListName", function(req,res){
     const customListName = req.params.customListName;
-    List.findOne({name:customListName}, function(err,foundList){
+    List.findOne({name:customListName}, function(err,foundList1){
         if (!err){
-            if(!foundList)
+            if(!foundList1)
                     {
                     console.log("Doesn't exist!");
                     const list = new List({
@@ -90,29 +90,29 @@ app.get("/:customListName", function(req,res){
                         res.redirect("/" + customListName);
                 }
             else {
-                res.render("list", {listTitle:foundList.name, newListItems: foundList.items});
+                res.render("list", {listTitle:foundList1.name, newListItems: foundList1.items});
             }
         }
     });
-    
-    
+
+
 });
 
 app.post("/", function(req, res){
 
   const itemName = req.body.newItem;
   const listName = req.body.list;
-    
+
  const item = new Item({
      name:itemName
  });
-    
-    if (listName === "Today")  
+
+    if (listName === "Today")
     {
     item.save();
     res.redirect("/");
     }
-    else 
+    else
     {
         List.findOne({name:listName}, function(err, foundList)
                     {
@@ -122,8 +122,8 @@ app.post("/", function(req, res){
                     })
     };
 
-    
-    
+
+
  /* if (req.body.list === "Work") {
     workItems.push(item);
     res.redirect("/work");
@@ -131,7 +131,7 @@ app.post("/", function(req, res){
     items.push(item);
     res.redirect("/");
   }*/
-}); 
+});
 
 app.post("/delete", function(req,res){
     const checkedItemId = req.body.checkbox;
@@ -142,11 +142,28 @@ app.post("/delete", function(req,res){
             console.log("Successfully deleted");
             res.redirect("/");
         }
-    }); 
-        
+    });
+
     } else {
-       
-        List.findOneAndUpdate({name:listName}, {$pull: {items: {_id: checkedItemId}}}, function(err,foundList){
+
+      List.findOne({name:listName}, function(err,foundList){
+        if (!err){
+          for (i=0;i<foundList.items.length;i++)
+          {
+            if(foundList.items[i]._id == checkedItemId){
+            foundList.items.splice(i,1);
+              console.log("Deleted");
+            };
+          };
+          for (i=0;i<foundList.items.length;i++){
+            console.log(foundList.items[i]);
+          };
+          foundList.save();
+          res.redirect("/" + listName);
+        }
+      });
+
+      /* List.findOneAndUpdate({name:listName}, {$pull: {items: {_id: checkedItemId}}}, function(err,foundList){
             console.log("List was"+ listName);
             console.log("Id was" +checkedItemId);
             if(!err) {
@@ -155,10 +172,10 @@ app.post("/delete", function(req,res){
             else{
             console.log(err);
                 };
-        });
-        
+        });*/
+
     };
-    
+
     //res.redirect("/");
 });
 
