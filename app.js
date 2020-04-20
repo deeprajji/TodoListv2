@@ -12,7 +12,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 mongoose.set('useFindAndModify', false);
-mongoose.connect("mongodb://localhost:27017/todolistDB", {useNewUrlParser: true});
+mongoose.connect("mongodb+srv://admin-deep:Test123@cluster0-lfwzi.mongodb.net/todolistDB", {useNewUrlParser: true});
 
 const itemSchema = new mongoose.Schema({
     name: {
@@ -164,8 +164,7 @@ app.post("/delete", function(req,res){
       });
 
       /* List.findOneAndUpdate({name:listName}, {$pull: {items: {_id: checkedItemId}}}, function(err,foundList){
-            console.log("List was"+ listName);
-            console.log("Id was" +checkedItemId);
+            foundList.save();
             if(!err) {
                 res.redirect("/" + listName);
             }
